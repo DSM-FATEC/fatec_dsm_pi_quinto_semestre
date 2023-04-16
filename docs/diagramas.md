@@ -36,9 +36,9 @@ flowchart LR
     api(API)
     bd[(Banco de dados)]
 
-    mob1 <== websocket ==> api
-    mob2 <== websocket ==> api
-    mob3 <== websocket ==> api
+    mob1 <--> api
+    mob2 <--> api
+    mob3 <--> api
     api <--> bd
 
     b1 -..-> mob1
@@ -46,39 +46,60 @@ flowchart LR
     b3 -..-> mob3
 ```
 
-## Sequência de comunicação entre o beacon e o aplicativo
+## Descoberta de artefatos pelo aplicativo
 
 ```mermaid
 sequenceDiagram
+    autonumber
+
+    actor Usuario
+    participant Aplicativo
+    participant API
+    participant Banco de dados
+
     Usuario->>Aplicativo: Abre aplicativo
 
     activate Usuario
     activate Aplicativo
 
-    loop 5 segundos
-        Aplicativo->>Aplicativo: Busca por um novo beacon
+    loop 5 Segundos
+        Aplicativo-->Aplicativo: Busca por um novo artefato
 
-        alt Beacon encontrado
-            Aplicativo->>Aplicativo: Obtém os ids dos beacons 
-            Aplicativo->>API: Obtém dados do beacon pelo id
+        alt Novo Artefato encontrado
+            Aplicativo-->Aplicativo: Obtém id do Artefato
+            Aplicativo->>API: Obtém dados do Artefato pelo id
 
             activate API
 
-            API->>Banco de dados: Obtém dados do beacon e seu último evento
+            API->>Banco de dados: Busca dados do Artefato e seu último evento
 
             activate Banco de dados
 
-            Banco de dados-->>API: Dados do beacon e seu último evento
+            Banco de dados-->>API: Dados do Artefato e seu último evento
 
             deactivate Banco de dados
 
-            API-->>Aplicativo: Dados do beacon e seu último evento
+            alt Dados encontrados
+                alt Artefato está ativo
+                    API-->>Aplicativo: [200] Dados do Artefato e seu último evento
+                else Artefato não está ativo
+                    API-->>Aplicativo: [204] Objeto vazio
+                end
+            else Dados não encontrados
+                API-->>Aplicativo:[204] Objeto vazio
+            end
 
             deactivate API
 
-            Aplicativo->>Usuario: Emite notificação sobre o beacon
-        else Beacon não encontrado
-            Aplicativo->>Aplicativo: Continua
+            Aplicativo--)Usuario: Emite notificação sobre o Artefato
+
+            alt Artefato é um publisher e último evento não é nulo
+                Aplicativo--)Usuario: Emite notificação sobre o último evento do Artefato
+            else Artefato não é publisher mas possui comportamento
+                Aplicativo--)Usuario: Emite notificação sobre o comportamento do Artefato
+            end
+        else Artefato não encontrado
+            Aplicativo-->Aplicativo: Continua
         end
 
     end
@@ -86,6 +107,76 @@ sequenceDiagram
 
     deactivate Usuario
     deactivate Aplicativo
+```
+
+## Envio de eventos pelos artefatos
+
+```mermaid
+sequenceDiagram
+    autonumber
+
+    participant Artefato
+    box Mensageria - RabbitMQ
+        participant Topico MQTT
+        participant Fila
+    end
+    participant API
+    participant Banco de dados
+    participant Aplicativo
+    actor Usuario
+
+
+    Artefato-)Topico MQTT: Envia id do Artefato e dados do evento
+
+    activate Artefato
+    deactivate Artefato
+    activate Topico MQTT
+
+    Topico MQTT->>Fila: Redireciona mensagem para a fila
+
+    deactivate Topico MQTT
+    activate Fila
+
+    Fila->>API: Envia mensagem
+
+    deactivate Fila
+    activate API
+
+    API-->API: Obtém id do Artefato pela mensagem
+    API-->API: Obtém dados do evento pela mensagem
+
+    API->>Banco de dados: Busca dados do Artefato
+
+    activate Banco de dados
+
+    Banco de dados-->>API: Dados do Artefato
+
+    deactivate Banco de dados
+
+    alt Artefato está ativo
+        API-)Aplicativo: [Websocket] Envia evento
+
+        activate Aplicativo
+
+        Aplicativo--)Usuario: Emite notificação sobre o evento
+
+        activate Usuario
+        deactivate Usuario
+        deactivate Aplicativo
+
+        API->>Banco de dados: Salva evento no banco de dados
+
+        activate Banco de dados
+
+        Banco de dados-->>API: Id do evento
+
+        deactivate Banco de dados
+    else Artefato não está ativo
+        API-->API: Descarta dados do evento
+    end
+
+    deactivate API
+
 ```
 
 # Banco de dados
