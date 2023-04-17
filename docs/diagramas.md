@@ -2,9 +2,9 @@
 
 ```mermaid
 flowchart LR
-    art1(Artefato Publisher 1)
-    art2(Artefato Publisher 2)
-    art3(Artefato Publisher 3)
+    art1(Artefato Produtor 1)
+    art2(Artefato Produtor 2)
+    art3(Artefato Produtor 3)
     mob1(Mobile 1)
     mob2(Mobile 2)
     mob3(Mobile 3)
@@ -93,9 +93,9 @@ sequenceDiagram
 
             Aplicativo--)Usuario: Emite notificação sobre o Artefato
 
-            alt Artefato é um publisher e último evento não é nulo
+            alt Artefato é um produtor e último evento não é nulo
                 Aplicativo--)Usuario: Emite notificação sobre o último evento do Artefato
-            else Artefato não é publisher mas possui comportamento
+            else Artefato não é produtor mas possui comportamento
                 Aplicativo--)Usuario: Emite notificação sobre o comportamento do Artefato
             end
         else Artefato não encontrado
@@ -109,7 +109,7 @@ sequenceDiagram
     deactivate Aplicativo
 ```
 
-## Envio de eventos pelos artefatos
+## Envio de eventos pelos artefatos produtores
 
 ```mermaid
 sequenceDiagram
@@ -183,67 +183,67 @@ sequenceDiagram
 
 ```mermaid
 erDiagram
-    users {
+    usuarios {
         serial id PK "unique, not null"
-        varchar(100) google_id "unique"
-        varchar(100) name "not null"
+        varchar(100) id_google "unique"
+        varchar(100) nome "not null"
         varchar(100) email "unique, not null"
-        varchar(255) password "not null"
-        text picture
-        timestamp created_at "default current_timestamp"
-        timestamp updated_at "default current_timestamp"
+        varchar(255) senha "not null"
+        text foto
+        timestamp criado_em "default now()"
+        timestamp atualizado_em "default now()"
     }
 
-    artifact_types {
+    tipos_de_artefato {
         serial id PK "unique, not null"
-        varchar(100) description "unique, not null"
-        boolean is_publisher "not null, "default false""
-        timestamp created_at "default current_timestamp"
-        timestamp updated_at "default current_timestamp"
+        varchar(100) descricao "unique, not null"
+        boolean produtor "not null, default false"
+        timestamp criado_em "default now()"
+        timestamp atualizado_em "default now()"
     }
 
-    artifacts {
+    artefatos {
         serial id PK "unique, not null"
-        bigint type FK "not null"
-        bigint entity FK "not null"
-        boolean is_active "default false"
-        varchar(255) description
-        jsonb behavior
-        timestamp created_at "default current_timestamp"
-        timestamp updated_at "default current_timestamp"
+        bigint tipo FK "not null"
+        bigint entidade FK "not null"
+        boolean ativo "default false"
+        varchar(255) descricao
+        jsonb comportamentos
+        timestamp criado_em "default now()"
+        timestamp atualizado_em "default now()"
     }
 
-    events {
+    eventos {
         serial id PK "unique, not null"
-        bigint artifact_id FK "not null"
-        jsonb payload
-        timestamp created_at "default current_timestamp"
-        timestamp updated_at "default current_timestamp"
+        bigint artefato_id FK "not null"
+        jsonb corpo
+        timestamp criado_em "default now()"
+        timestamp atualizado_em "default now()"
     }
 
-    entity_types {
+    tipos_de_entidade {
         serial id PK "unique, not null"
-        varchar(100) description "unique, not null"
-        timestamp created_at "default current_timestamp"
-        timestamp updated_at "default current_timestamp"
+        varchar(100) descricao "unique, not null"
+        timestamp criado_em "default now()"
+        timestamp atualizado_em "default now()"
     }
 
-    entities {
+    entidades {
         serial id PK "unique, not null"
-        bigint type FK "unique, not null"
-        varchar(100) description "unique, not null"
+        bigint tipo FK "unique, not null"
+        varchar(100) descricao "unique, not null"
         char(9) cep "not null"
-        varchar(255) complement
-        varchar(255) adddress "not null"
-        varchar(255) neighborhood "not null"
-        varchar(255) city "not null"
-        varchar(255) state "not null"
-        timestamp created_at "default current_timestamp"
-        timestamp updated_at "default current_timestamp"
+        varchar(255) complemento
+        varchar(255) endereco "not null"
+        varchar(255) bairro "not null"
+        varchar(255) cidade "not null"
+        varchar(255) estado "not null"
+        timestamp criado_em "default now()"
+        timestamp atualizado_em "default now()"
     }
 
-    artifacts }o--|| artifact_types : "N:1"
-    entities }o--|| entity_types : "N:1"
-    artifacts }o--|| entities : "N:1"
-    events }o--|{ artifacts : "N:N"
+    artefatos }o--|| tipos_de_artefato : "N:1"
+    entidades }o--|| tipos_de_entidade : "N:1"
+    artefatos }o--|| entidades : "N:1"
+    eventos }o--|{ artefatos : "N:N"
 ```
