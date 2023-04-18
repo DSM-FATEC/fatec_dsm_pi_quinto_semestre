@@ -7,9 +7,8 @@ services:
     ports:
       - 5432:5432  # Relação porta local e porta do contâiner
     volumes:
-       - ./migrations:/docker-entrypoint-initdb.d:Z # Diretório das migrações
       - ./db:/var/lib/postgresql/data:Z # Diretório dos dados
-      - ./migrations:/migrations:Z # Diretório dos dados
+      - ./migrations:/docker-entrypoint-initdb.d:Z # Diretório das migrações
     networks:
       - backend  # Rede do backend, permite que os serviços se comuniquem usando o seu nome
     environment:
