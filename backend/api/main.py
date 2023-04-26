@@ -1,13 +1,12 @@
-import os
-
 # Importando bibliotecas externas
 from fastapi import FastAPI
 from dotenv import load_dotenv
 
 # Importando classes internas
 from controllers.tipo_entidade_controller import TipoEntidadeController
-from database.conector_banco_de_dados import ConectorBancoDeDados
+from conectors.banco_de_dados_conector import BancoDeDadosConector
 from models.tipo_entidade_model import TipoEntidadeModel
+from repositories.tipo_entidade_repository import TipoEntidadeRepository
 
 
 # Carrega o arquivo de configurações, tornando as variáveis presentes
@@ -18,11 +17,14 @@ load_dotenv()
 app = FastAPI()
 
 # Conectando ao banco de dados e abrindo uma pool de conexões
-conector = ConectorBancoDeDados()
+conector = BancoDeDadosConector()
 pool = conector.abre_pool()
 
+# Instanciando os repositórios
+tipo_entidade_repository = TipoEntidadeRepository(pool)
+
 # Instanciando os controllers
-tipo_entidade_controller = TipoEntidadeController()
+tipo_entidade_controller = TipoEntidadeController(tipo_entidade_repository)
 
 # Registrando endpoint de ping
 # <objeto app>.get(endpoint) -> Registra uma url que vai responder quando
@@ -39,3 +41,11 @@ def ping():
 @app.post('/tipo_entidade')
 def cria_tipo_entidade(dados: TipoEntidadeModel):
     return tipo_entidade_controller.cria_tipo_entidade(dados)
+
+@app.get('/tipo_entidade/{id}')
+def obtem_tipo_entidade(id):
+    return tipo_entidade_controller.obtem_tipo_entidade(id)
+
+@app.get('/tipo_entidade')
+def lista_tipo_entidade():
+    return tipo_entidade_controller.lista_tipo_entidade()
