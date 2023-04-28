@@ -18,5 +18,10 @@ class Validador:
     @staticmethod
     def filled(valor, campo):
         if not valor:
-            raise ValueError(f'campo {campo} não pode ser vazio ou nulo')
+            raise ValueError(f'campo {campo} não pode ser falso, vazio ou nulo')
+
+    @staticmethod
+    def not_null(valor, campo):
+        if valor is None:
+            raise ValueError(f'campo {campo} não pode ser nulo')
 
