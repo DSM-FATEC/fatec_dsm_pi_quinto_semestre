@@ -1,12 +1,17 @@
 # Importando bibliotecas externas
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
+from pydantic import ValidationError
 
 # Importando classes internas
 from controllers.tipo_entidade_controller import TipoEntidadeController
+from controllers.entidade_controller import EntidadeController
 from conectors.banco_de_dados_conector import BancoDeDadosConector
 from models.tipo_entidade_model import TipoEntidadeModel
+from models.entidade_model import EntidadeModel
 from repositories.tipo_entidade_repository import TipoEntidadeRepository
+from repositories.entidade_repository import EntidadeRepository
 
 
 # Carrega o arquivo de configurações, tornando as variáveis presentes
@@ -22,25 +27,34 @@ pool = conector.abre_pool()
 
 # Instanciando os repositórios
 tipo_entidade_repository = TipoEntidadeRepository(pool)
+entidade_repository = EntidadeRepository(pool)
 
 # Instanciando os controllers
 tipo_entidade_controller = TipoEntidadeController(tipo_entidade_repository)
+entidade_controller = EntidadeController(entidade_repository)
 
-# Registrando endpoint de ping
-# <objeto app>.get(endpoint) -> Registra uma url que vai responder quando
-#                               fizermos uma requisição GET no servidor
-# Requisições GET -> São as requisições que possuem retorno (procuram algo)
+
+# Registrando os middlewares
+@app.middleware('http')
+async def lida_com_erros_middleware(requisicao: Request, proximo):
+    try:
+        return await proximo(requisicao)
+    except ValidationError as e:
+        return JSONResponse(status_code=422, content=str(e))
+    except Exception as e:
+        return JSONResponse(status_code=500, content={'erro': str(e)})
+
+
+# Endpoints utilitários
 @app.get('/ping')
 def ping():
     return 'pong'
 
 
-# <objeto app>.post(endpoint) -> Registra uma url que vai responder quando
-#                                fizermos uma requisição POST no servidor
-# Requisições POST -> São as requisições que enviam dados e criam algo
+# Endpoints de tipos de entidade
 @app.post('/tipo_entidade')
-def cria_tipo_entidade(dados: TipoEntidadeModel):
-    return tipo_entidade_controller.cria_tipo_entidade(dados)
+def cria_tipo_entidade(tipo_entidade: TipoEntidadeModel):
+    return tipo_entidade_controller.cria_tipo_entidade(tipo_entidade)
 
 @app.get('/tipo_entidade/{id}')
 def obtem_tipo_entidade(id):
@@ -49,3 +63,33 @@ def obtem_tipo_entidade(id):
 @app.get('/tipo_entidade')
 def lista_tipo_entidade():
     return tipo_entidade_controller.lista_tipo_entidade()
+
+@app.put('/tipo_entidade/{id}')
+def atualiza_tipo_entidade(tipo_entidade: TipoEntidadeModel, id):
+    return tipo_entidade_controller.atualiza_tipo_entidade(tipo_entidade, id)
+
+@app.delete('/tipo_entidade/{id}')
+def deleta_tipo_entidade(id):
+    return tipo_entidade_controller.deleta_tipo_entidade(id)
+
+
+# Endpoints de entidade
+@app.post('/entidade')
+def cria_entidade(entidade: EntidadeModel):
+    return entidade_controller.cria_entidade(entidade)
+
+@app.get('/entidade/{id}')
+def obtem_entidade(id):
+    return entidade_controller.obtem_entidade(id)
+
+@app.get('/entidade')
+def lista_entidade():
+    return entidade_controller.lista_entidade()
+
+@app.put('/entidade/{id}')
+def atualiza_entidade(entidade: EntidadeModel, id):
+    return entidade_controller.atualiza_entidade(entidade, id)
+
+@app.delete('/entidade/{id}')
+def deleta_entidade(id):
+    return entidade_controller.deleta_entidade(id)

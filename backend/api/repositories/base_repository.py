@@ -18,8 +18,11 @@ class BaseRepository(ABC):
             # realmente vai executar as queries no banco de dados
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
                 try:
-                    # <cursor>.execute() -> Executa uma query no banco de dados
+                    # <cursor>.execute() -> Prepara um query no banco de dados
                     cursor.execute(query, argumentos)
+
+                    # <conexão>.commit() -> Executa a query preparada no banco de dados
+                    conn.commit()
 
                     if retorna_resultados:
                         # <cursor>.fetchall() -> Retorna os resultados da query
