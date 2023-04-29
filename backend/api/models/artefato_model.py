@@ -4,7 +4,7 @@ from pydantic import BaseModel, validator
 
 from validacoes.validador import Validador
 from models.tipo_artefato_model import TipoArtefatoModel
-from models.entidade_model import EntidadeModel
+from models.entidade_model import EntidadeSchema
 
 
 class ArtefatoModel(BaseModel):
@@ -39,4 +39,4 @@ class ArtefatoModel(BaseModel):
 
 class ArtefatoSchema(ArtefatoModel):
     tipo: TipoArtefatoModel
-    entidade: EntidadeModel
+    entidade: EntidadeSchema

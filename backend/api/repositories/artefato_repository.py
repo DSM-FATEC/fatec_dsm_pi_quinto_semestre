@@ -20,6 +20,24 @@ class ArtefatoRepository(BaseRepository):
                     (%s, %s, %s, %s, %s)
                 RETURNING
                     *
+            ),
+            entidades AS (
+                SELECT
+                    e.id,
+                    ROW_TO_JSON(tde.*) AS tipo,
+                    e.descricao,
+                    e.cep,
+                    e.complemento,
+                    e.endereco,
+                    e.bairro,
+                    e.cidade,
+                    e.estado,
+                    e.criado_em,
+                    e.atualizado_em
+                FROM
+                    entidades e
+                INNER JOIN tipos_de_entidade tde ON
+                    tde.id = e.tipo
             )
             SELECT
                 a.id,
@@ -46,6 +64,24 @@ class ArtefatoRepository(BaseRepository):
 
     def obtem(self, id):
         query = '''
+            WITH entidades AS (
+                SELECT
+                    e.id,
+                    ROW_TO_JSON(tde.*) AS tipo,
+                    e.descricao,
+                    e.cep,
+                    e.complemento,
+                    e.endereco,
+                    e.bairro,
+                    e.cidade,
+                    e.estado,
+                    e.criado_em,
+                    e.atualizado_em
+                FROM
+                    entidades e
+                INNER JOIN tipos_de_entidade tde ON
+                    tde.id = e.tipo
+            )
             SELECT
                 a.id,
                 ROW_TO_JSON(tda.*) AS tipo,
@@ -72,6 +108,24 @@ class ArtefatoRepository(BaseRepository):
 
     def lista(self):
         query = '''
+            WITH entidades AS (
+                SELECT
+                    e.id,
+                    ROW_TO_JSON(tde.*) AS tipo,
+                    e.descricao,
+                    e.cep,
+                    e.complemento,
+                    e.endereco,
+                    e.bairro,
+                    e.cidade,
+                    e.estado,
+                    e.criado_em,
+                    e.atualizado_em
+                FROM
+                    entidades e
+                INNER JOIN tipos_de_entidade tde ON
+                    tde.id = e.tipo
+            )
             SELECT
                 a.id,
                 ROW_TO_JSON(tda.*) AS tipo,
@@ -108,6 +162,24 @@ class ArtefatoRepository(BaseRepository):
                     id = %s
                 RETURNING
                     *
+            ),
+            entidades AS (
+                SELECT
+                    e.id,
+                    ROW_TO_JSON(tde.*) AS tipo,
+                    e.descricao,
+                    e.cep,
+                    e.complemento,
+                    e.endereco,
+                    e.bairro,
+                    e.cidade,
+                    e.estado,
+                    e.criado_em,
+                    e.atualizado_em
+                FROM
+                    entidades e
+                INNER JOIN tipos_de_entidade tde ON
+                    tde.id = e.tipo
             )
             SELECT
                 a.id,

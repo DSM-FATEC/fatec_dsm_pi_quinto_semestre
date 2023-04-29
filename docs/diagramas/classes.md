@@ -64,6 +64,12 @@ classDiagram
         valida_estado(valor: str): str
     }
 
+    class EntidadeSchema {
+        <<models>>
+
+        +tipo: TipoEntidadeModel
+    }
+
     class TipoArtefatoModel {
         <<models>>
 
@@ -98,7 +104,7 @@ classDiagram
         <<models>>
 
         +tipo: TipoArtefatoModel
-        +entidade: EntidadeModel
+        +entidade: EntidadeSchema
     }
 
     class TipoEntidadeController {
@@ -205,6 +211,7 @@ classDiagram
     TipoEntidadeController ..> TipoEntidadeRepository
 
     EntidadeModel --|> BaseModel
+    EntidadeSchema --|> EntidadeModel
     EntidadeRepository --|> BaseRepository
     EntidadeRepository ..> EntidadeModel
     EntidadeRepository ..> RegistroNaoEncontradoException
@@ -220,6 +227,8 @@ classDiagram
 
     ArtefatoModel --|> BaseModel
     ArtefatoSchema --|> ArtefatoModel
+    ArtefatoSchema ..> EntidadeSchema
+    ArtefatoSchema ..> TipoArtefatoModel
     ArtefatoRepository --|> BaseRepository
     ArtefatoRepository ..> ArtefatoModel
     ArtefatoRepository ..> ArtefatoSchema

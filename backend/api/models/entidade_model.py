@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, validator
 
 from validacoes.validador import Validador
+from models.tipo_entidade_model import TipoEntidadeModel
 
 
 class EntidadeModel(BaseModel):
@@ -67,3 +68,7 @@ class EntidadeModel(BaseModel):
         Validador.max(valor, 'estado', 255)
 
         return valor
+
+
+class EntidadeSchema(EntidadeModel):
+    tipo: TipoEntidadeModel
