@@ -1,4 +1,5 @@
 from repositories.base_repository import BaseRepository
+from exceptions.registro_nao_encontrado import RegistroNaoEncontradoException
 
 
 class TipoArtefatoRepository(BaseRepository):
@@ -31,11 +32,19 @@ class TipoArtefatoRepository(BaseRepository):
         '''
         resultado = self.executa(query, argumentos=[id],
                                  retorna_resultados=True)
+        if not resultado:
+            raise RegistroNaoEncontradoException(id)
 
-        return resultado
+        return resultado[0]
 
     def lista(self):
-        query = 'SELECT * FROM tipos_de_artefato'
+        query = '''
+            SELECT
+                *
+            FROM
+                tipos_de_artefato
+            ORDER BY criado_em DESC
+        '''
         resultado = self.executa(query, retorna_resultados=True)
 
         return resultado

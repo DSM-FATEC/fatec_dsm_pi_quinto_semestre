@@ -1,6 +1,7 @@
 from json import loads
 
 from repositories.base_repository import BaseRepository
+from exceptions.registro_nao_encontrado import RegistroNaoEncontradoException
 
 
 class EntidadeRepository(BaseRepository):
@@ -9,12 +10,30 @@ class EntidadeRepository(BaseRepository):
 
     def cria(self, entidade):
         query = '''
-            INSERT INTO entidades
-                (tipo, descricao, cep, complemento, bairro, endereco, cidade, estado)
-            VALUES
-                (%s, %s, %s, %s, %s, %s, %s, %s)
-            RETURNING
-                *
+            WITH entidades AS (
+                INSERT INTO entidades
+                    (tipo, descricao, cep, complemento, bairro, endereco, cidade, estado)
+                VALUES
+                    (%s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING
+                    *
+            )
+            SELECT
+                e.id,
+                ROW_TO_JSON(tde.*) AS tipo,
+                e.descricao,
+                e.cep,
+                e.complemento,
+                e.endereco,
+                e.bairro,
+                e.cidade,
+                e.estado,
+                e.criado_em,
+                e.atualizado_em
+            FROM
+                entidades e
+            INNER JOIN tipos_de_entidade tde ON
+                tde.id = e.tipo
         '''
         resultado = self.executa(query, argumentos=[entidade.tipo,
                                                     entidade.descricao,
@@ -26,13 +45,22 @@ class EntidadeRepository(BaseRepository):
                                                     entidade.estado],
                                  retorna_resultados=True)
 
-        return resultado
+        return resultado[0]
 
     def obtem(self, id):
         query = '''
             SELECT
-                e.*,
-                ROW_TO_JSON(tde.*) AS tipo_json
+                e.id,
+                ROW_TO_JSON(tde.*) AS tipo,
+                e.descricao,
+                e.cep,
+                e.complemento,
+                e.endereco,
+                e.bairro,
+                e.cidade,
+                e.estado,
+                e.criado_em,
+                e.atualizado_em
             FROM
                 entidades e
             INNER JOIN tipos_de_entidade tde ON
@@ -42,49 +70,70 @@ class EntidadeRepository(BaseRepository):
         '''
         resultado = self.executa(query, argumentos=[id],
                                  retorna_resultados=True)
-        if resultado:
-            for entidade in resultado:
-                entidade['tipo'] = entidade['tipo_json']
-                del entidade['tipo_json']
+        if not resultado:
+            raise RegistroNaoEncontradoException(id)
 
-        return resultado
+        return resultado[0]
 
     def lista(self):
         query = '''
             SELECT
-                e.*,
-                ROW_TO_JSON(tde.*) AS tipo_json
+                e.id,
+                ROW_TO_JSON(tde.*) AS tipo,
+                e.descricao,
+                e.cep,
+                e.complemento,
+                e.endereco,
+                e.bairro,
+                e.cidade,
+                e.estado,
+                e.criado_em,
+                e.atualizado_em
             FROM
                 entidades e
             INNER JOIN tipos_de_entidade tde ON
                 tde.id = e.tipo
+            ORDER BY e.criado_em DESC
         '''
         resultado = self.executa(query, argumentos=[id],
                                  retorna_resultados=True)
-        if resultado:
-            for entidade in resultado:
-                entidade['tipo'] = entidade['tipo_json']
-                del entidade['tipo_json']
-
         return resultado
 
     def atualiza(self, entidade, id):
         query = '''
-            UPDATE
-                entidades
-            SET
-                tipo = %s,
-                descricao = %s,
-                cep = %s,
-                complemento = %s,
-                bairro = %s,
-                endereco = %s,
-                cidade = %s,
-                estado = %s
-            WHERE
-                id = %s
-            RETURNING
-                *
+            WITH entidades AS (
+                UPDATE
+                    entidades
+                SET
+                    tipo = %s,
+                    descricao = %s,
+                    cep = %s,
+                    complemento = %s,
+                    bairro = %s,
+                    endereco = %s,
+                    cidade = %s,
+                    estado = %s
+                WHERE
+                    id = %s
+                RETURNING
+                    *
+            )
+            SELECT
+                e.id,
+                ROW_TO_JSON(tde.*) AS tipo,
+                e.descricao,
+                e.cep,
+                e.complemento,
+                e.endereco,
+                e.bairro,
+                e.cidade,
+                e.estado,
+                e.criado_em,
+                e.atualizado_em
+            FROM
+                entidades e
+            INNER JOIN tipos_de_entidade tde ON
+                tde.id = e.tipo
         '''
         resultado = self.executa(query, argumentos=[entidade.tipo,
                                                     entidade.descricao,

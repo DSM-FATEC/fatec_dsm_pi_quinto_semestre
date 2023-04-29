@@ -8,13 +8,17 @@ from pydantic import ValidationError
 from controllers.tipo_entidade_controller import TipoEntidadeController
 from controllers.entidade_controller import EntidadeController
 from controllers.tipo_artefato_controller import TipoArtefatoController
+from controllers.artefato_controller import ArtefatoController
 from conectors.banco_de_dados_conector import BancoDeDadosConector
+from exceptions.registro_nao_encontrado import RegistroNaoEncontradoException
 from models.tipo_entidade_model import TipoEntidadeModel
 from models.entidade_model import EntidadeModel
 from models.tipo_artefato_model import TipoArtefatoModel
+from models.artefato_model import ArtefatoModel, ArtefatoSchema
 from repositories.tipo_entidade_repository import TipoEntidadeRepository
 from repositories.entidade_repository import EntidadeRepository
 from repositories.tipo_artefato_repository import TipoArtefatoRepository
+from repositories.artefato_repository import ArtefatoRepository
 
 
 # Carrega o arquivo de configurações, tornando as variáveis presentes
@@ -32,11 +36,13 @@ pool = conector.abre_pool()
 tipo_entidade_repository = TipoEntidadeRepository(pool)
 entidade_repository = EntidadeRepository(pool)
 tipo_artefato_repository = TipoArtefatoRepository(pool)
+artefato_repository = ArtefatoRepository(pool)
 
 # Instanciando os controllers
 tipo_entidade_controller = TipoEntidadeController(tipo_entidade_repository)
 entidade_controller = EntidadeController(entidade_repository)
 tipo_artefato_controller = TipoArtefatoController(tipo_artefato_repository)
+artefato_controller = ArtefatoController(artefato_repository)
 
 
 # Registrando os middlewares
@@ -45,7 +51,9 @@ async def lida_com_erros_middleware(requisicao: Request, proximo):
     try:
         return await proximo(requisicao)
     except ValidationError as e:
-        return JSONResponse(status_code=422, content=str(e))
+        return JSONResponse(status_code=422, content={'erro': str(e)})
+    except RegistroNaoEncontradoException as e:
+        return JSONResponse(status_code=404, content={'erro': str(e)})
     except Exception as e:
         return JSONResponse(status_code=500, content={'erro': str(e)})
 
@@ -120,3 +128,25 @@ def atualiza_tipo_artefato(entidade: TipoArtefatoModel, id):
 @app.delete('/tipo_artefato/{id}')
 def deleta_tipo_artefato(id):
     return tipo_artefato_controller.deleta_tipo_artefato(id)
+
+
+# Endpoints de artefato
+@app.post('/artefato')
+def cria_artefato(artefato: ArtefatoModel) -> ArtefatoSchema:
+    return artefato_controller.cria_artefato(artefato)
+
+@app.get('/artefato/{id}')
+def obtem_artefato(id) -> ArtefatoSchema:
+    return artefato_controller.obtem_artefato(id)
+
+@app.get('/artefato')
+def lista_artefato() -> list[ArtefatoSchema]:
+    return artefato_controller.lista_artefato()
+
+@app.put('/artefato/{id}')
+def atualiza_artefato(artefato: ArtefatoModel, id) -> ArtefatoSchema:
+    return artefato_controller.atualiza_artefato(artefato, id)
+
+@app.delete('/artefato/{id}')
+def deleta_artefato(id):
+    return artefato_controller.deleta_artefato(id)

@@ -1,4 +1,5 @@
 from repositories.base_repository import BaseRepository
+from exceptions.registro_nao_encontrado import RegistroNaoEncontradoException
 
 
 class TipoEntidadeRepository(BaseRepository):
@@ -30,11 +31,19 @@ class TipoEntidadeRepository(BaseRepository):
         '''
         resultado = self.executa(query, argumentos=[id],
                                  retorna_resultados=True)
+        if not resultado:
+            raise RegistroNaoEncontradoException(id)
 
-        return resultado
+        return resultado[0]
 
     def lista(self):
-        query = 'SELECT * FROM tipos_de_entidade'
+        query = '''
+            SELECT
+                *
+            FROM
+                tipos_de_entidade
+            ORDER BY criado_em DESC
+        '''
         resultado = self.executa(query, retorna_resultados=True)
 
         return resultado

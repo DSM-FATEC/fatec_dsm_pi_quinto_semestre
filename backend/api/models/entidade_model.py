@@ -35,7 +35,8 @@ class EntidadeModel(BaseModel):
 
     @validator('complemento')
     def valida_complemento(cls, valor):
-        Validador.max(valor, 'complemento', 255)
+        if valor:  # Só valida caso esteja preenchido
+            Validador.max(valor, 'complemento', 255)
 
         return valor
 
