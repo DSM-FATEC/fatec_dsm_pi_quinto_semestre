@@ -77,6 +77,30 @@ classDiagram
         +valida_produtor(valor: bool): bool
     }
 
+    class ArtefatoModel {
+        <<models>>
+
+        +id: int|None
+        +tipo: int
+        +entidade: int
+        +ativo: bool|None
+        +descricao: str|None
+        +comportamentos: dict|None
+        +criado_em: datetime|None
+        +atualizado_em: datetime|None
+
+        +valida_tipo(valor: int): int
+        +valida_entidade(valor: int): int
+        +valida_descricao(valor: str|None): str|None
+    }
+
+    class ArtefatoSchema {
+        <<models>>
+
+        +tipo: TipoArtefatoModel
+        +entidade: EntidadeModel
+    }
+
     class TipoEntidadeController {
         <<controllers>>
 
@@ -113,6 +137,18 @@ classDiagram
         +deleta_tipo_artefato(id: int): void
     }
 
+    class ArtefatoController {
+        <<controllers>>
+
+        +artefato_repository: ArtefatoRepository
+
+        +cria_artefato(artefato: ArtefatoModel): ArtefatoSchema
+        +obtem_artefato(id: int): ArtefatoSchema
+        +lista_artefato(): list[ArtefatoSchema]
+        +atualiza_artefato(artefato: ArtefatoModel, id: int): ArtefatoSchema
+        +deleta_artefato(id: int): void
+    }
+
     class TipoEntidadeRepository {
         <<repositories>>
 
@@ -142,28 +178,52 @@ classDiagram
 
         +pool: ThreadedConnectionPool
 
-        +cria(tipo_entidade: TipoArtefatoModel): dict
+        +cria(tipo_artefato: TipoArtefatoModel): dict
         +obtem(id: int): dict
         +lista(): list[dict]
-        +atualiza(tipo_entidade: TipoArtefatoModel, id: int): dict
+        +atualiza(tipo_artefato: TipoArtefatoModel, id: int): dict
+        +deleta(id: int): void
+    }
+
+    class ArtefatoRepository {
+        <<repositories>>
+
+        +pool: ThreadedConnectionPool
+
+        +cria(artefato: ArtefatoModel): ArtefatoSchema
+        +obtem(id: int): ArtefatoSchema
+        +lista(): list[ArtefatoSchema]
+        +atualiza(artefato: ArtefatoModel, id: int): ArtefatoSchema
         +deleta(id: int): void
     }
 
     TipoEntidadeModel --|> BaseModel
     TipoEntidadeRepository --|> BaseRepository
     TipoEntidadeRepository ..> TipoEntidadeModel
+    TipoEntidadeRepository ..> RegistroNaoEncontradoException
     TipoEntidadeController ..> TipoEntidadeModel
     TipoEntidadeController ..> TipoEntidadeRepository
 
     EntidadeModel --|> BaseModel
     EntidadeRepository --|> BaseRepository
     EntidadeRepository ..> EntidadeModel
+    EntidadeRepository ..> RegistroNaoEncontradoException
     EntidadeController ..> EntidadeModel
     EntidadeController ..> EntidadeRepository
 
     TipoArtefatoModel --|> BaseModel
     TipoArtefatoRepository --|> BaseRepository
     TipoArtefatoRepository ..> TipoArtefatoModel
+    TipoArtefatoRepository ..> RegistroNaoEncontradoException
     TipoArtefatoController ..> TipoArtefatoModel
     TipoArtefatoController ..> TipoArtefatoRepository
+
+    ArtefatoModel --|> BaseModel
+    ArtefatoSchema --|> ArtefatoModel
+    ArtefatoRepository --|> BaseRepository
+    ArtefatoRepository ..> ArtefatoModel
+    ArtefatoRepository ..> ArtefatoSchema
+    ArtefatoRepository ..> RegistroNaoEncontradoException
+    ArtefatoController ..> ArtefatoRepository
+    ArtefatoController ..> ArtefatoModel
 ```
