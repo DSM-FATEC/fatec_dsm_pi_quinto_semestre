@@ -1,22 +1,39 @@
 version: '3'
 
 services:
-  postgres:  # Nome do serviço, vai ser usado por outros serviço para se comunicarem
-    image: postgres:15  # Versão do PostgreSQL
-    restart: on-failure        # Reinicia o serviço de banco caso haja falhas
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/api/Dockerfile
     ports:
-      - 5432:5432  # Relação porta local e porta do contâiner
+      - 8000:8000
     volumes:
-      - ./db:/var/lib/postgresql/data:Z # Diretório dos dados
-      - ./migrations:/docker-entrypoint-initdb.d:Z # Diretório das migrações
+      - ./services:/app:Z
     networks:
-      - backend  # Rede do backend, permite que os serviços se comuniquem usando o seu nome
+      - backend
     environment:
-      POSTGRES_PASSWORD: pi_dsm_5  # Senha do banco de dados
-      POSTGRES_USER: pi_dsm_5      # Usuário do banco de dados
-      POSTGRES_DB: pi_dsm_5        # Nome do banco de dados
-      POSTGRES_PORT: 5432          # Porta do banco de dados
-      POSTGRES_HOST: postgres      # Host do banco de dados, vai ser usado pelo python
+      POSTGRES_PASSWORD: pi_dsm_5
+      POSTGRES_USER: pi_dsm_5
+      POSTGRES_DB: pi_dsm_5
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: postgres
+
+  postgres:
+    image: postgres:15
+    restart: on-failure
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db:/var/lib/postgresql/data:Z
+      - ./migrations:/docker-entrypoint-initdb.d:Z
+    networks:
+      - backend
+    environment:
+      POSTGRES_PASSWORD: pi_dsm_5
+      POSTGRES_USER: pi_dsm_5
+      POSTGRES_DB: pi_dsm_5
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: postgres
 
 networks:
   backend:
