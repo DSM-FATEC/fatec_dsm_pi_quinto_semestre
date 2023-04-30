@@ -107,6 +107,22 @@ classDiagram
         +entidade: EntidadeSchema
     }
 
+    class EventoModel {
+        <<models>>
+
+        +id: int|None
+        +artefato: int
+        +corpo: dict|None
+        +criado_em: datetime|None
+        +atualizado_em: datetime|None
+    }
+
+    class EventoSchema {
+        <<models>>
+
+        +artefato: ArtefatoSchema
+    }
+
     class TipoEntidadeController {
         <<controllers>>
 
@@ -153,6 +169,18 @@ classDiagram
         +lista_artefato(): list[ArtefatoSchema]
         +atualiza_artefato(artefato: ArtefatoModel, id: int): ArtefatoSchema
         +deleta_artefato(id: int): void
+    }
+
+    class EventoController {
+        <<controllers>>
+
+        +evento_repository: EventoRepository
+
+        +cria_evento(evento: EventoModel): EventoSchema
+        +obtem_evento(id: int): EventoSchema
+        +lista_evento(): list[EventoSchema]
+        +atualiza_evento(evento: EventoModel, id: int): list[EventoSchema]
+        +deleta_evento(id: int): void
     }
 
     class TipoEntidadeRepository {
@@ -203,6 +231,18 @@ classDiagram
         +deleta(id: int): void
     }
 
+    class EventoRepository {
+        <<repositories>>
+
+        +pool: ThreadedConnectionPool
+
+        +cria(evento: EventoModel): EventoSchema
+        +obtem(id: int): EventoSchema
+        +lista(): list[EventoSchema]
+        +atualiza(evento: EventoModel, id: int): EventoSchema
+        +deleta(id: int): void
+    }
+
     TipoEntidadeModel --|> BaseModel
     TipoEntidadeRepository --|> BaseRepository
     TipoEntidadeRepository ..> TipoEntidadeModel
@@ -235,4 +275,14 @@ classDiagram
     ArtefatoRepository ..> RegistroNaoEncontradoException
     ArtefatoController ..> ArtefatoRepository
     ArtefatoController ..> ArtefatoModel
+
+    EventoModel --|> BaseModel
+    EventoSchema --|> EventoModel
+    EventoSchema ..> ArtefatoSchema
+    EventoRepository --|> BaseRepository
+    EventoRepository ..> EventoModel
+    EventoRepository ..> EventoSchema
+    EventoRepository ..> RegistroNaoEncontradoException
+    EventoController ..> EventoRepository
+    EventoController ..> EventoModel
 ```
