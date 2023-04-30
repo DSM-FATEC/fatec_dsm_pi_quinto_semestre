@@ -17,6 +17,8 @@ services:
       POSTGRES_DB: pi_dsm_5
       POSTGRES_PORT: 5432
       POSTGRES_HOST: postgres
+    depends_on:
+      - postgres
 
   postgres:
     image: postgres:15
