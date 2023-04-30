@@ -242,6 +242,7 @@ def atualiza_evento(artefato: EventoModel, id) -> EventoSchema:
     return evento_controller.atualiza_evento(artefato, id)
 
 
-@app.delete('/evento/{id}', tags=['Eventos'])
+@app.delete('/evento/{id}', tags=['Eventos'],
+            dependencies=[Depends(security)])
 def deleta_evento(id) -> None:
     return evento_controller.deleta_evento(id)
