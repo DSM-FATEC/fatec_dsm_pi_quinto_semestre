@@ -13,7 +13,7 @@ from controllers.evento_controller import EventoController
 from conectors.banco_de_dados_conector import BancoDeDadosConector
 from exceptions.registro_nao_encontrado import RegistroNaoEncontradoException
 from models.tipo_entidade_model import TipoEntidadeModel
-from models.entidade_model import EntidadeModel
+from models.entidade_model import EntidadeModel, EntidadeSchema
 from models.tipo_artefato_model import TipoArtefatoModel
 from models.artefato_model import ArtefatoModel, ArtefatoSchema
 from models.evento_model import EventoModel, EventoSchema
@@ -71,67 +71,67 @@ def ping():
 
 # Endpoints de tipos de entidade
 @app.post('/tipo_entidade', tags=['Tipos de entidade'])
-def cria_tipo_entidade(tipo_entidade: TipoEntidadeModel):
+def cria_tipo_entidade(tipo_entidade: TipoEntidadeModel) -> TipoEntidadeModel:
     return tipo_entidade_controller.cria_tipo_entidade(tipo_entidade)
 
 @app.get('/tipo_entidade/{id}', tags=['Tipos de entidade'])
-def obtem_tipo_entidade(id):
+def obtem_tipo_entidade(id) -> TipoEntidadeModel:
     return tipo_entidade_controller.obtem_tipo_entidade(id)
 
 @app.get('/tipo_entidade', tags=['Tipos de entidade'])
-def lista_tipo_entidade():
+def lista_tipo_entidade() -> list[TipoEntidadeModel]:
     return tipo_entidade_controller.lista_tipo_entidade()
 
 @app.put('/tipo_entidade/{id}', tags=['Tipos de entidade'])
-def atualiza_tipo_entidade(tipo_entidade: TipoEntidadeModel, id):
+def atualiza_tipo_entidade(tipo_entidade: TipoEntidadeModel, id) -> TipoEntidadeModel:
     return tipo_entidade_controller.atualiza_tipo_entidade(tipo_entidade, id)
 
 @app.delete('/tipo_entidade/{id}', tags=['Tipos de entidade'])
-def deleta_tipo_entidade(id):
+def deleta_tipo_entidade(id) -> None:
     return tipo_entidade_controller.deleta_tipo_entidade(id)
 
 
 # Endpoints de entidade
 @app.post('/entidade', tags=['Entidades'])
-def cria_entidade(entidade: EntidadeModel):
+def cria_entidade(entidade: EntidadeModel) -> EntidadeSchema:
     return entidade_controller.cria_entidade(entidade)
 
 @app.get('/entidade/{id}', tags=['Entidades'])
-def obtem_entidade(id):
+def obtem_entidade(id) -> EntidadeSchema:
     return entidade_controller.obtem_entidade(id)
 
 @app.get('/entidade', tags=['Entidades'])
-def lista_entidade():
+def lista_entidade() -> list[EntidadeSchema]:
     return entidade_controller.lista_entidade()
 
 @app.put('/entidade/{id}', tags=['Entidades'])
-def atualiza_entidade(entidade: EntidadeModel, id):
+def atualiza_entidade(entidade: EntidadeModel, id) -> EntidadeSchema:
     return entidade_controller.atualiza_entidade(entidade, id)
 
 @app.delete('/entidade/{id}', tags=['Entidades'])
-def deleta_entidade(id):
+def deleta_entidade(id) -> None:
     return entidade_controller.deleta_entidade(id)
 
 
 # Endpoints de tipo de artefatos
 @app.post('/tipo_artefato', tags=['Tipos de artefato'])
-def cria_tipo_artefato(entidade: TipoArtefatoModel):
+def cria_tipo_artefato(entidade: TipoArtefatoModel) -> TipoArtefatoModel:
     return tipo_artefato_controller.cria_tipo_artefato(entidade)
 
 @app.get('/tipo_artefato/{id}', tags=['Tipos de artefato'])
-def obtem_tipo_artefato(id):
+def obtem_tipo_artefato(id) -> TipoArtefatoModel:
     return tipo_artefato_controller.obtem_tipo_artefato(id)
 
 @app.get('/tipo_artefato', tags=['Tipos de artefato'])
-def lista_tipo_artefato():
+def lista_tipo_artefato() -> TipoArtefatoModel:
     return tipo_artefato_controller.lista_tipo_artefato()
 
 @app.put('/tipo_artefato/{id}', tags=['Tipos de artefato'])
-def atualiza_tipo_artefato(entidade: TipoArtefatoModel, id):
+def atualiza_tipo_artefato(entidade: TipoArtefatoModel, id) -> TipoArtefatoModel:
     return tipo_artefato_controller.atualiza_tipo_artefato(entidade, id)
 
 @app.delete('/tipo_artefato/{id}', tags=['Tipos de artefato'])
-def deleta_tipo_artefato(id):
+def deleta_tipo_artefato(id) -> None:
     return tipo_artefato_controller.deleta_tipo_artefato(id)
 
 
@@ -153,7 +153,7 @@ def atualiza_artefato(artefato: ArtefatoModel, id) -> ArtefatoSchema:
     return artefato_controller.atualiza_artefato(artefato, id)
 
 @app.delete('/artefato/{id}', tags=['Artefatos'])
-def deleta_artefato(id):
+def deleta_artefato(id) -> None:
     return artefato_controller.deleta_artefato(id)
 
 
@@ -175,5 +175,5 @@ def atualiza_evento(artefato: EventoModel, id) -> EventoSchema:
     return evento_controller.atualiza_evento(artefato, id)
 
 @app.delete('/evento/{id}', tags=['Eventos'])
-def deleta_evento(id):
+def deleta_evento(id) -> None:
     return evento_controller.deleta_evento(id)
