@@ -46,6 +46,7 @@ class EventoRepository(BaseRepository):
                     ROW_TO_JSON(e.*) AS entidade,
                     a.descricao,
                     a.comportamentos,
+                    a.ativo,
                     a.criado_em,
                     a.atualizado_em
                 FROM
@@ -69,7 +70,7 @@ class EventoRepository(BaseRepository):
         resultado = self.executa(query, argumentos=[evento.artefato,
                                                     evento.corpo],
                                  retorna_resultados=True)
-        return resultado[0]
+        return dict(resultado[0])
 
     def obtem(self, id):
         query = '''
@@ -98,6 +99,7 @@ class EventoRepository(BaseRepository):
                     ROW_TO_JSON(e.*) AS entidade,
                     a.descricao,
                     a.comportamentos,
+                    a.ativo,
                     a.criado_em,
                     a.atualizado_em
                 FROM
@@ -154,6 +156,7 @@ class EventoRepository(BaseRepository):
                     ROW_TO_JSON(e.*) AS entidade,
                     a.descricao,
                     a.comportamentos,
+                    a.ativo,
                     a.criado_em,
                     a.atualizado_em
                 FROM
@@ -219,6 +222,7 @@ class EventoRepository(BaseRepository):
                     ROW_TO_JSON(e.*) AS entidade,
                     a.descricao,
                     a.comportamentos,
+                    a.ativo,
                     a.criado_em,
                     a.atualizado_em
                 FROM

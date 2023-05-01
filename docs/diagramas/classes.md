@@ -3,12 +3,25 @@
 ```mermaid
 classDiagram
     class BancoDeDadosConector {
+        <<connectors>>
+
         +usuario: str
         +senha: str
         +host: str
         +port: int
         +banco: int
+
         +abre_pool(): ThreadedConnectionPool
+    }
+
+    class WebsocketConector {
+        <<connectors>>
+
+        +conexoes_ativas: list[Websocket]
+
+        +conecta(websocket: Websocket): void
+        +desconecta(websocket: Websocket): void
+        +envia_mensagem_para_todos(mensagem: dict): void
     }
 
     class BaseModel {
@@ -175,6 +188,7 @@ classDiagram
         <<controllers>>
 
         +evento_repository: EventoRepository
+        +websocket_conector: WebsocketConector
 
         +cria_evento(evento: EventoModel): EventoSchema
         +obtem_evento(id: int): EventoSchema
@@ -284,5 +298,6 @@ classDiagram
     EventoRepository ..> EventoSchema
     EventoRepository ..> RegistroNaoEncontradoException
     EventoController ..> EventoRepository
+    EventoController ..> WebsocketConector
     EventoController ..> EventoModel
 ```

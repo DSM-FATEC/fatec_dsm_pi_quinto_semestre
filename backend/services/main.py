@@ -1,10 +1,12 @@
 from os import getenv
 from secrets import compare_digest
+from datetime import datetime
 
 # Importando bibliotecas externas
 from fastapi import FastAPI, Request, Depends
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.websockets import WebSocket, WebSocketDisconnect
 from dotenv import load_dotenv
 from pydantic import ValidationError
 
@@ -15,6 +17,7 @@ from controllers.tipo_artefato_controller import TipoArtefatoController
 from controllers.artefato_controller import ArtefatoController
 from controllers.evento_controller import EventoController
 from conectors.banco_de_dados_conector import BancoDeDadosConector
+from conectors.websocket_connector import WebsocketConnector
 from exceptions.registro_nao_encontrado import RegistroNaoEncontradoException
 from exceptions.usuario_invalido import UsuarioInvalidoException
 from models.tipo_entidade_model import TipoEntidadeModel
@@ -43,6 +46,9 @@ security = HTTPBasic()
 conector = BancoDeDadosConector()
 pool = conector.abre_pool()
 
+# Abrindo uma conector de websockts
+websockets_conector = WebsocketConnector()
+
 # Instanciando os repositórios
 tipo_entidade_repository = TipoEntidadeRepository(pool)
 entidade_repository = EntidadeRepository(pool)
@@ -55,7 +61,7 @@ tipo_entidade_controller = TipoEntidadeController(tipo_entidade_repository)
 entidade_controller = EntidadeController(entidade_repository)
 tipo_artefato_controller = TipoArtefatoController(tipo_artefato_repository)
 artefato_controller = ArtefatoController(artefato_repository)
-evento_controller = EventoController(evento_repository)
+evento_controller = EventoController(evento_repository, websockets_conector)
 
 
 # Registrando os middlewares
@@ -220,8 +226,8 @@ def deleta_artefato(id) -> None:
 # Endpoints de evento
 @app.post('/evento', tags=['Eventos'],
           dependencies=[Depends(security)])
-def cria_evento(artefato: EventoModel) -> EventoSchema:
-    return evento_controller.cria_evento(artefato)
+async def cria_evento(artefato: EventoModel) -> EventoSchema:
+    return await evento_controller.cria_evento(artefato)
 
 
 @app.get('/evento/{id}', tags=['Eventos'],
@@ -246,3 +252,18 @@ def atualiza_evento(artefato: EventoModel, id) -> EventoSchema:
             dependencies=[Depends(security)])
 def deleta_evento(id) -> None:
     return evento_controller.deleta_evento(id)
+
+
+# Websocket de eventos
+@app.websocket('/evento/ws/{id}')
+async def eventos(websocket: WebSocket, id):
+    await websockets_conector.conecta(websocket)
+
+    try:
+        while True:
+            evento = await websocket.receive_json()
+
+            if isinstance(evento, dict):
+                await websockets_conector.envia_mensagem_para_todos(evento)
+    except WebSocketDisconnect:
+        websockets_conector.desconecta(websocket)

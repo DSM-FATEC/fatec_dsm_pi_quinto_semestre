@@ -45,6 +45,7 @@ class ArtefatoRepository(BaseRepository):
                 ROW_TO_JSON(e.*) AS entidade,
                 a.descricao,
                 a.comportamentos,
+                a.ativo,
                 a.criado_em,
                 a.atualizado_em
             FROM
@@ -88,6 +89,7 @@ class ArtefatoRepository(BaseRepository):
                 ROW_TO_JSON(e.*) AS entidade,
                 a.descricao,
                 a.comportamentos,
+                a.ativo,
                 a.criado_em,
                 a.atualizado_em
             FROM
@@ -132,6 +134,7 @@ class ArtefatoRepository(BaseRepository):
                 ROW_TO_JSON(e.*) AS entidade,
                 a.descricao,
                 a.comportamentos,
+                a.ativo,
                 a.criado_em,
                 a.atualizado_em
             FROM
@@ -187,6 +190,7 @@ class ArtefatoRepository(BaseRepository):
                 ROW_TO_JSON(e.*) AS entidade,
                 a.descricao,
                 a.comportamentos,
+                a.ativo,
                 a.criado_em,
                 a.atualizado_em
             FROM
