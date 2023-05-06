@@ -1,6 +1,7 @@
 from os import getenv
 from secrets import compare_digest
 from datetime import datetime
+from threading import Thread
 
 # Importando bibliotecas externas
 from fastapi import FastAPI, Request, Depends
@@ -11,6 +12,7 @@ from dotenv import load_dotenv
 from pydantic import ValidationError
 
 # Importando classes internas
+from consumers.eventos_consumer import EventosConsumer
 from controllers.tipo_entidade_controller import TipoEntidadeController
 from controllers.entidade_controller import EntidadeController
 from controllers.tipo_artefato_controller import TipoArtefatoController
@@ -18,6 +20,7 @@ from controllers.artefato_controller import ArtefatoController
 from controllers.evento_controller import EventoController
 from conectors.banco_de_dados_conector import BancoDeDadosConector
 from conectors.websocket_connector import WebsocketConnector
+from conectors.rabbitmq_conector import RabbitMqConector
 from exceptions.registro_nao_encontrado import RegistroNaoEncontradoException
 from exceptions.usuario_invalido import UsuarioInvalidoException
 from models.tipo_entidade_model import TipoEntidadeModel
@@ -42,12 +45,17 @@ app = FastAPI()
 # Criando a variável global de segurancao do FastaPI
 security = HTTPBasic()
 
-# Conectando ao banco de dados e abrindo uma pool de conexões
-conector = BancoDeDadosConector()
-pool = conector.abre_pool()
-
-# Abrindo uma conector de websockts
+# Instancia conectores
 websockets_conector = WebsocketConnector()
+banco_de_dados_conector = BancoDeDadosConector()
+rabbit_mq_conector = RabbitMqConector()
+
+# Conectando ao banco de dados e abrindo uma pool de conexões
+pool = banco_de_dados_conector.abre_pool()
+
+# Conecta no rabbit mq
+eventos_canal, eventos_fila = rabbit_mq_conector.abre_canal('eventos_exchange',
+                                              conecta_amq_topic=True)
 
 # Instanciando os repositórios
 tipo_entidade_repository = TipoEntidadeRepository(pool)
@@ -91,6 +99,16 @@ def valida_credenciais(credenciais: HTTPBasicCredentials = Depends(security)):
         return {'mensagem': 'usuário autenticado'}
 
     raise UsuarioInvalidoException()
+
+
+# Abre consumidor
+eventos_consumer = EventosConsumer(eventos_canal, eventos_fila,
+                                   evento_repository, websockets_conector)
+
+# Inicia consumidor de eventos
+eventos_consumer_thread = Thread(target=eventos_consumer.consome_eventos,
+                                 name='Consome eventos')
+eventos_consumer_thread.start()
 
 
 # Endpoints utilitários
@@ -226,8 +244,8 @@ def deleta_artefato(id) -> None:
 # Endpoints de evento
 @app.post('/evento', tags=['Eventos'],
           dependencies=[Depends(security)])
-async def cria_evento(artefato: EventoModel) -> EventoSchema:
-    return await evento_controller.cria_evento(artefato)
+def cria_evento(artefato: EventoModel) -> EventoSchema:
+    return evento_controller.cria_evento(artefato)
 
 
 @app.get('/evento/{id}', tags=['Eventos'],

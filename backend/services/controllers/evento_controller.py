@@ -6,7 +6,7 @@ class EventoController:
         self.evento_repository = evento_repository
         self.websocket_conector = websocket_conector
 
-    async def cria_evento(self, evento):
+    def cria_evento(self, evento):
         novo_evento = self.evento_repository.cria(evento)
 
         try:
@@ -15,7 +15,7 @@ class EventoController:
 
             if self.websocket_conector:
                 if self.websocket_conector.conexoes_ativas:
-                    await self.websocket_conector.envia_mensagem_para_todos(novo_evento)
+                    self.websocket_conector.envia_mensagem_para_todos(novo_evento)
         except IndexError:
             pass
 
