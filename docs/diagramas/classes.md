@@ -24,6 +24,18 @@ classDiagram
         +envia_mensagem_para_todos(mensagem: dict): void
     }
 
+    class RabbitMqConector {
+        <<connector>>
+
+        +usuario: str
+        +senha: str
+        +host: str
+        +porta: str
+        +host_virtual: str
+
+        +abre_canal(nome_exchange: str, nome_fila: str, conecta_amq_topic: bool): tuple[Channel, str]
+    }
+
     class BaseModel {
         <<pydantic>>
     }
