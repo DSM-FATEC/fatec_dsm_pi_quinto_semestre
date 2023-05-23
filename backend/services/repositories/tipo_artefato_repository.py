@@ -47,7 +47,7 @@ class TipoArtefatoRepository(BaseRepository):
         '''
         resultado = self.executa(query, retorna_resultados=True)
 
-        return resultado
+        return dict(resultado[0])
 
     def atualiza(self, tipo_artefato, id):
         query = '''
@@ -66,7 +66,7 @@ class TipoArtefatoRepository(BaseRepository):
                                                     id],
                                  retorna_resultados=True)
 
-        return resultado
+        return dict(resultado[0])
 
     def deleta(self, id):
         query = 'DELETE FROM tipos_de_artefato WHERE id = %s'
