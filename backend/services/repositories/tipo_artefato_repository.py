@@ -19,7 +19,7 @@ class TipoArtefatoRepository(BaseRepository):
                                                     tipo_artefato.produtor],
                                  retorna_resultados=True)
 
-        return resultado
+        return dict(resultado[0])
 
     def obtem(self, id):
         query = '''
@@ -35,7 +35,7 @@ class TipoArtefatoRepository(BaseRepository):
         if not resultado:
             raise RegistroNaoEncontradoException(id)
 
-        return resultado[0]
+        return dict(resultado[0])
 
     def lista(self):
         query = '''

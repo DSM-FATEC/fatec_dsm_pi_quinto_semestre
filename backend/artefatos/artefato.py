@@ -83,8 +83,8 @@ def obtem_comportamento():
 
 
 def executa_comportamento(comportamento, client_mqtt):
-    led_vermelho = machine.Pin(4)  # GD2
-    led_verde = machine.Pin(5)     # GD1
+    led_vermelho = machine.Pin(4, mode=machine.Pin.OUT)  # GD2
+    led_verde = machine.Pin(5, mode=machine.Pin.OUT)     # GD1
 
     led_vermelho.on()
 

@@ -127,7 +127,7 @@ class EventoRepository(BaseRepository):
         if not resultado:
             raise RegistroNaoEncontradoException(id)
 
-        return resultado[0]
+        return dict(resultado[0])
 
     def lista(self):
         query = '''
@@ -248,7 +248,7 @@ class EventoRepository(BaseRepository):
                                                     id],
                                  retorna_resultados=True)
 
-        return resultado[0]
+        return dict(resultado[0])
 
     def deleta(self, id):
         query = '''

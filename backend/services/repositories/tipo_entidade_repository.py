@@ -34,7 +34,7 @@ class TipoEntidadeRepository(BaseRepository):
         if not resultado:
             raise RegistroNaoEncontradoException(id)
 
-        return resultado[0]
+        return dict(resultado[0])
 
     def lista(self):
         query = '''

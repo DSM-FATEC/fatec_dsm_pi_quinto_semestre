@@ -45,7 +45,7 @@ class EntidadeRepository(BaseRepository):
                                                     entidade.estado],
                                  retorna_resultados=True)
 
-        return resultado[0]
+        return dict(resultado[0])
 
     def obtem(self, id):
         query = '''
@@ -73,7 +73,7 @@ class EntidadeRepository(BaseRepository):
         if not resultado:
             raise RegistroNaoEncontradoException(id)
 
-        return resultado[0]
+        return dict(resultado[0])
 
     def lista(self):
         query = '''

@@ -194,7 +194,7 @@ def obtem_tipo_artefato(id) -> TipoArtefatoModel:
 
 @app.get('/tipo_artefato', tags=['Tipos de artefato'],
          dependencies=[Depends(security)])
-def lista_tipo_artefato() -> TipoArtefatoModel:
+def lista_tipo_artefato() -> list[TipoArtefatoModel]:
     return tipo_artefato_controller.lista_tipo_artefato()
 
 
