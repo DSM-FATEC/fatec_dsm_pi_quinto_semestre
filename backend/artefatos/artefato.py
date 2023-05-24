@@ -7,9 +7,8 @@ import network
 from umqtt.simple import MQTTClient
 
 
-
 # Dados do artefato
-ARTEFATO_ID = 1
+ARTEFATO_ID = 2
 
 # Dados de conexão do wifi
 WIFI_SSID = 'Xalalala'
@@ -33,7 +32,7 @@ MQTT_HOST = b'jackal.rmq.cloudamqp.com'
 MQTT_PORT = 1883
 MQTT_USERNAME = b'ohgfzhhc:ohgfzhhc'
 MQTT_PASSWORD = b'MDoYqNvJJscBzsTeWOqdIrIDrUrA6wsO'
-MQTT_TOPIC_ROUTING_KEY = b'eventos_exchange'
+MQTT_TOPIC_ROUTING_KEY = b'eventos'
 
 
 def conecta_wifi():
@@ -76,7 +75,8 @@ def abre_access_point():
 
 
 def obtem_comportamento():
-    res = urequests.get(f'{API_HOST}/artefato/{ARTEFATO_ID}')
+    res = urequests.get(f'{API_HOST}/artefato/{ARTEFATO_ID}',
+                        auth=(API_USER, API_HOST))
     artefato = res.json()
 
     return artefato['comportamentos']
@@ -88,8 +88,10 @@ def executa_comportamento(comportamento, client_mqtt):
 
     led_vermelho.on()
 
+    msg = '{"artefato": "' + str(ARTEFATO_ID) + '", "corpo": {"estado": "Semáforo fechado"}}'
+
     client_mqtt.publish(topic=MQTT_TOPIC_ROUTING_KEY,
-                        msg='{"artefato": "' + str(ARTEFATO_ID) + '", "corpo": {"estado": "Semáforo fechado"}}')
+                        msg=bytes(msg, 'utf-8'))
 
     time.sleep(int(comportamento['closed_duration']))
 
@@ -97,8 +99,10 @@ def executa_comportamento(comportamento, client_mqtt):
 
     led_verde.on()
 
+    msg = '{"artefato": "' + str(ARTEFATO_ID) + '", "corpo": {"estado": "Semáforo aberto"}}'
+
     client_mqtt.publish(topic=MQTT_TOPIC_ROUTING_KEY,
-                        msg='{"artefato": "' + str(ARTEFATO_ID) + '", "corpo": {"estado": "Semáforo aberto"}}')
+                        msg=bytes(msg, 'utf-8'))
 
     time.sleep(int(comportamento['open_duration']))
 

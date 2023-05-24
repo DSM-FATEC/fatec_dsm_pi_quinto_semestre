@@ -24,6 +24,7 @@ class EventosConsumer:
 
                 # Salva o evento no banco de dados
                 novo_evento = self.evento_repository.cria(evento)
+                print(novo_evento)
                 if not novo_evento['artefato']['ativo']:
                     # Ignora artefatos que não estão ativos
                     return
@@ -46,7 +47,7 @@ class EventosConsumer:
 
             # TODO
 
-        self.canal.basic_consume(queue=self.fila,
+        self.canal.basic_consume(queue='eventos',
                                  auto_ack=False,
                                  on_message_callback=processa_evento,
                                  exclusive=True)

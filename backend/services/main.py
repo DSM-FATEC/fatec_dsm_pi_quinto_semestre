@@ -55,7 +55,8 @@ pool = banco_de_dados_conector.abre_pool()
 
 # Conecta no rabbit mq
 eventos_canal, eventos_fila = rabbit_mq_conector.abre_canal('eventos_exchange',
-                                              conecta_amq_topic=True)
+                                                            nome_fila='eventos',
+                                                            conecta_amq_topic=True)
 
 # Instanciando os repositórios
 tipo_entidade_repository = TipoEntidadeRepository(pool)

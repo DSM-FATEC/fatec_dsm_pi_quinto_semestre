@@ -28,7 +28,7 @@ class RabbitMqConector:
 
         # Declara a fila, para que a mesma seja criada caso não exista
         fila_declarada = canal.queue_declare(queue=nome_fila,
-                                             exclusive=True)
+                                             durable=True)
 
         # Obtém o nome "real" da fila declarada
         nome_fila_declarada = fila_declarada.method.queue
