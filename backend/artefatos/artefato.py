@@ -8,7 +8,7 @@ from umqtt.simple import MQTTClient
 
 
 # Dados do artefato
-ARTEFATO_ID = 2
+ARTEFATO_ID = 1
 
 # Dados de conexão do wifi
 WIFI_SSID = 'Xalalala'
@@ -21,7 +21,7 @@ ACCESS_POINT_SENHA = '12345678'
 # Dados da api
 API_USER='admin'
 API_PASSWORD='admin'
-API_HOST='http://193.123.106.232:8000'
+API_HOST='https://guiame-api.3far1ivu8btka.us-east-1.cs.amazonlightsail.com'
 
 # Dados do Node MCU
 # machine.unique_id() -> Obtém o identificador do Arduino
@@ -136,8 +136,3 @@ if __name__ == '__main__':
 
     while True:
         executa_comportamento(comportamentos, cliente_mqtt)
-        # res = urequests.get(f'{API_HOST}/ping')
-        # print(res.text)
-        # res.close()
-
-        # time.sleep(15)
