@@ -2,7 +2,7 @@ FROM python:3.11
 
 WORKDIR /app
 
-COPY ./services .
+COPY . .
 
 RUN pip install -r requirements.txt
 
