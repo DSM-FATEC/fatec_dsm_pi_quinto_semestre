@@ -47,7 +47,7 @@ class TipoArtefatoRepository(BaseRepository):
         '''
         resultado = self.executa(query, retorna_resultados=True)
 
-        return dict(resultado[0])
+        return resultado
 
     def atualiza(self, tipo_artefato, id):
         query = '''
