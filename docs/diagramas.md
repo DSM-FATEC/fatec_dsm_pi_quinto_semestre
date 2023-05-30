@@ -116,40 +116,32 @@ sequenceDiagram
     autonumber
 
     participant Artefato
-    box Mensageria - RabbitMQ
-        participant Topico MQTT
-        participant Fila
-    end
+    participant Mensageria
     participant API
     participant Banco de dados
     participant Aplicativo
     actor Usuario
 
 
-    Artefato-)Topico MQTT: Envia id do Artefato e dados do evento
-
     activate Artefato
+
+    Artefato-)Mensageria: Envia mensagem com evento
+
     deactivate Artefato
-    activate Topico MQTT
+    activate Mensageria
 
-    Topico MQTT->>Fila: Redireciona mensagem para a fila
+    Mensageria->>API: Consome evento
 
-    deactivate Topico MQTT
-    activate Fila
-
-    Fila->>API: Envia mensagem
-
-    deactivate Fila
+    deactivate Mensageria
     activate API
 
-    API-->API: Obtém id do Artefato pela mensagem
-    API-->API: Obtém dados do evento pela mensagem
+    API-->API: Obém evento da mensagem
 
-    API->>Banco de dados: Busca dados do Artefato
+    API->>Banco de dados: Salva evento no banco de dados
 
     activate Banco de dados
 
-    Banco de dados-->>API: Dados do Artefato
+    Banco de dados-->>API: Evento com relacionamentos
 
     deactivate Banco de dados
 
@@ -163,17 +155,9 @@ sequenceDiagram
         activate Usuario
         deactivate Usuario
         deactivate Aplicativo
-
-        API->>Banco de dados: Salva evento no banco de dados
-
-        activate Banco de dados
-
-        Banco de dados-->>API: Id do evento
-
-        deactivate Banco de dados
-    else Artefato não está ativo
-        API-->API: Descarta dados do evento
     end
+
+    API --> API: Marca mensagem como lida
 
     deactivate API
 

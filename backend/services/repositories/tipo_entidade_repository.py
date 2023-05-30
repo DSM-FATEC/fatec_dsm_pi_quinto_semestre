@@ -18,7 +18,7 @@ class TipoEntidadeRepository(BaseRepository):
         resultado = self.executa(query, argumentos=[tipo_entidade.descricao],
                                  retorna_resultados=True)
 
-        return resultado
+        return dict(resultado[0])
 
     def obtem(self, id):
         query = '''
@@ -34,7 +34,7 @@ class TipoEntidadeRepository(BaseRepository):
         if not resultado:
             raise RegistroNaoEncontradoException(id)
 
-        return resultado[0]
+        return dict(resultado[0])
 
     def lista(self):
         query = '''
@@ -62,7 +62,7 @@ class TipoEntidadeRepository(BaseRepository):
         resultado = self.executa(query, argumentos=[tipo_entidade.descricao, id],
                                  retorna_resultados=True)
 
-        return resultado
+        return dict(resultado[0])
 
     def deleta(self, id):
         query = 'DELETE FROM tipos_de_entidade WHERE id = %s'
