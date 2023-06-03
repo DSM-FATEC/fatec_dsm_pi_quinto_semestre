@@ -10,7 +10,27 @@ class UsuarioRepository(BaseRepository):
         super().__init__(pool)
 
     def criptografa_senha(self, senha: str) -> str:
-        return hashpw(bytes(senha, 'utf-8'), gensalt(14))
+        senha_criptografada = hashpw(bytes(senha, 'utf-8'), gensalt(14))
+
+        return senha_criptografada.decode('utf-8')
+
+    def autoriza(self, email: str, senha: str) -> bool:
+        query = '''
+            SELECT
+                email, senha
+            FROM
+                usuarios
+            WHERE
+                email = %s
+        '''
+        resultado = self.executa(query, argumentos=[email],
+                                 retorna_resultados=True)
+        if not resultado:
+            return False
+
+        usuario = dict(resultado[0])
+
+        return checkpw(bytes(senha, 'utf-8'), bytes(usuario['senha'], 'utf-8'))
 
     def cria(self, usuario: UsuarioModel) -> dict:
         query = '''
