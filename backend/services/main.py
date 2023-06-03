@@ -18,6 +18,7 @@ from controllers.entidade_controller import EntidadeController
 from controllers.tipo_artefato_controller import TipoArtefatoController
 from controllers.artefato_controller import ArtefatoController
 from controllers.evento_controller import EventoController
+from controllers.usuario_controller import UsuarioController
 from conectors.banco_de_dados_conector import BancoDeDadosConector
 from conectors.websocket_connector import WebsocketConnector
 from conectors.rabbitmq_conector import RabbitMqConector
@@ -28,11 +29,13 @@ from models.entidade_model import EntidadeModel, EntidadeSchema
 from models.tipo_artefato_model import TipoArtefatoModel
 from models.artefato_model import ArtefatoModel, ArtefatoSchema
 from models.evento_model import EventoModel, EventoSchema
+from models.usuario_model import UsuarioModel, UsuarioSchema
 from repositories.tipo_entidade_repository import TipoEntidadeRepository
 from repositories.entidade_repository import EntidadeRepository
 from repositories.tipo_artefato_repository import TipoArtefatoRepository
 from repositories.artefato_repository import ArtefatoRepository
 from repositories.evento_repository import EventoRepository
+from repositories.usuario_repository import UsuarioRepository
 
 
 # Carrega o arquivo de configurações, tornando as variáveis presentes
@@ -64,6 +67,7 @@ entidade_repository = EntidadeRepository(pool)
 tipo_artefato_repository = TipoArtefatoRepository(pool)
 artefato_repository = ArtefatoRepository(pool)
 evento_repository = EventoRepository(pool)
+usuario_repository = UsuarioRepository(pool)
 
 # Instanciando os controllers
 tipo_entidade_controller = TipoEntidadeController(tipo_entidade_repository)
@@ -71,6 +75,7 @@ entidade_controller = EntidadeController(entidade_repository)
 tipo_artefato_controller = TipoArtefatoController(tipo_artefato_repository)
 artefato_controller = ArtefatoController(artefato_repository)
 evento_controller = EventoController(evento_repository, websockets_conector)
+usuario_controller = UsuarioController(usuario_repository)
 
 
 # Registrando os middlewares
@@ -271,6 +276,37 @@ def atualiza_evento(artefato: EventoModel, id) -> EventoSchema:
             dependencies=[Depends(security)])
 def deleta_evento(id) -> None:
     return evento_controller.deleta_evento(id)
+
+
+# Endpoints de usuarios
+@app.post('/usuario', tags=['Usuarios'],
+          dependencies=[Depends(security)])
+def cria_usuario(usuario: UsuarioModel) -> UsuarioSchema:
+    return usuario_controller.cria_usuario(usuario)
+
+
+@app.get('/usuario/{id}', tags=['Usuarios'],
+         dependencies=[Depends(security)])
+def obtem_usuario(id) -> UsuarioSchema:
+    return usuario_controller.obtem_usuario(id)
+
+
+@app.get('/usuario', tags=['Usuarios'],
+         dependencies=[Depends(security)])
+def lista_usuario() -> list[UsuarioSchema]:
+    return usuario_controller.lista_usuario()
+
+
+@app.put('/usuario/{id}', tags=['Usuarios'],
+         dependencies=[Depends(security)])
+def atualiza_usuario(usuario: UsuarioModel, id) -> UsuarioSchema:
+    return usuario_controller.atualiza_usuario(usuario, id)
+
+
+@app.delete('/usuario/{id}', tags=['Usuarios'],
+            dependencies=[Depends(security)])
+def deleta_usuario(id) -> None:
+    return usuario_controller.deleta_usuario(id)
 
 
 # Websocket de eventos
