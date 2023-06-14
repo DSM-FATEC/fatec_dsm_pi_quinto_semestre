@@ -38,9 +38,7 @@ Os artefatos são utilizados como dispositivos de IOT para serem identificados p
 
 ### Documentação
 
-Na documentação são expostos todos os elementos utilizados, a composição do projeto e como foram aplicadas as técnicas necessárias para seu desenvolvimento, podendo deixar explícito também como ele funciona e ocorre sua implementação.
-
-Pode-se encontrá-la em “Wiki” ou no [link](https://github.com/DSM-FATEC/fatec_dsm_pi_quinto_semestre/wiki)
+Na documentação são expostos os elementos utilizados, a composição do projeto e como foram aplicadas as técnicas necessárias para seu desenvolvimento, podendo deixar explícito também como ele funciona e como ocorre sua implementação. Podendo encontrá-la na página ["Wiki"](https://github.com/DSM-FATEC/fatec_dsm_pi_quinto_semestre/wiki) aqui no github.
 
 ### Aplicativo
 
