@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+<<<<<<< Updated upstream
+=======
+import 'package:frontend/model/alert_event_model.dart';
+import 'package:frontend/services/alert_event_service.dart';
+>>>>>>> Stashed changes
 
 enum AppMenu {
   about,
@@ -10,7 +15,7 @@ class AlertsScreenHome extends StatelessWidget {
   const AlertsScreenHome({super.key});
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Guia-Me'),
@@ -50,42 +55,62 @@ class CardAlert extends StatelessWidget {
   const CardAlert({super.key});
 
   @override
+<<<<<<< Updated upstream
+=======
+  State<CardAlert> createState() => _CardAlertState();
+}
+
+class _CardAlertState extends State<CardAlert> {
+  List<AlertEvent>? result = [];
+
+  @override
+  void initState() {
+    _obtenEventos();
+    super.initState();
+  }
+
+  _obtenEventos() async {
+    final result = await getAlertEvent();
+  }
+
+  @override
+>>>>>>> Stashed changes
   Widget build(BuildContext context) {
-    return Center(
-      child: Card(
-        child: Column(
-          children: <Widget>[
-            const ListTile(
-              leading: Icon(Icons.hdr_auto, size: 40.0, color: Colors.purple,),
-              title: Text('Event'),
-              subtitle: Text('Description.'),
-            ),
-            Row(
-            ),
-            const ListTile(
-              leading: Icon(Icons.hdr_auto, size: 40.0, color: Colors.purple,),
-              title: Text('Event'),
-              subtitle: Text('Description.'),
-            ),
-            Row(
-            ),
-            const ListTile(
-              leading: Icon(Icons.hdr_auto, size: 40.0, color: Colors.purple,),
-              title: Text('Event'),
-              subtitle: Text('Description.'),
-            ),
-            Row(
-            ),
-            const ListTile(
-              leading: Icon(Icons.hdr_auto, size: 40.0, color: Colors.purple,),
-              title: Text('Event'),
-              subtitle: Text('Description.'),
-            ),
-            Row(
-            ),
-          ],
-        ),
-      ),
+    return FutureBuilder(
+      future: Future.delayed(const Duration(seconds: 5)),
+      builder: (context, snapshot) {
+        return ListView.builder(
+          itemCount: [].length,
+          itemBuilder: (context, index) {
+            if(snapshot.connectionState != ConnectionState.done){
+              return const Center(
+                child: SizedBox(
+                  height: 200,
+                  width: 200,
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            var data = snapshot.data;
+
+            return Card(
+              child: ListTile(
+                leading: CircleAvatar(
+                  child: Text('E'),
+                ),
+                title: Text(data.artefato.tipo.descricao),
+                subtitle: Text(
+                  data.artefato.entidade.descricao,
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
+
+
+// Terminar de contruir o card e validar se vai retorna cada card da api
