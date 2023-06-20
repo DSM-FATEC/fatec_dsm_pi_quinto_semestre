@@ -57,10 +57,10 @@ rabbit_mq_conector = RabbitMqConector()
 # Conectando ao banco de dados e abrindo uma pool de conexões
 pool = banco_de_dados_conector.abre_pool()
 
-# # Conecta no rabbit mq
-# eventos_canal, eventos_fila = rabbit_mq_conector.abre_canal('eventos_exchange',
-#                                                             nome_fila='eventos',
-#                                                             conecta_amq_topic=True)
+# Conecta no rabbit mq
+eventos_canal, eventos_fila = rabbit_mq_conector.abre_canal('eventos_exchange',
+                                                            nome_fila='eventos',
+                                                            conecta_amq_topic=True)
 
 # Instanciando os repositórios
 tipo_entidade_repository = TipoEntidadeRepository(pool)
@@ -106,14 +106,14 @@ def valida_credenciais(credenciais: HTTPBasicCredentials = Depends(security)):
 
 
 
-# # Abre consumidor
-# eventos_consumer = EventosConsumer(eventos_canal, eventos_fila,
-#                                    evento_repository, websockets_conector)
+# Abre consumidor
+eventos_consumer = EventosConsumer(eventos_canal, eventos_fila,
+                                   evento_repository, websockets_conector)
 
-# # Inicia consumidor de eventos
-# eventos_consumer_thread = Thread(target=eventos_consumer.consome_eventos,
-#                                  name='Consome eventos')
-# eventos_consumer_thread.start()
+# Inicia consumidor de eventos
+eventos_consumer_thread = Thread(target=eventos_consumer.consome_eventos,
+                                 name='Consome eventos')
+eventos_consumer_thread.start()
 
 
 # Endpoints utilitários
