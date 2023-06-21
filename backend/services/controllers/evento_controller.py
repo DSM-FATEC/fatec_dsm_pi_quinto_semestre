@@ -15,6 +15,8 @@ class EventoController:
 
             if self.websocket_conector:
                 if self.websocket_conector.conexoes_ativas:
+                    print(novo_evento)
+
                     self.websocket_conector.envia_mensagem_para_todos(novo_evento)
         except IndexError:
             pass

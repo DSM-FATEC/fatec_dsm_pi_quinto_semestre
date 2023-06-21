@@ -8,7 +8,7 @@ from umqtt.simple import MQTTClient
 
 
 # Dados do artefato
-ARTEFATO_ID = 1
+ARTEFATO_ID = 4
 
 # Dados de conexão do wifi
 WIFI_SSID = 'Xalalala'
@@ -19,8 +19,8 @@ ACCESS_POINT_SSID = f'guia_me_artefato_{ARTEFATO_ID}'
 ACCESS_POINT_SENHA = '12345678'
 
 # Dados da api
-API_USER='admin'
-API_PASSWORD='admin'
+API_USER='carol@carol.carol'
+API_PASSWORD='carol'
 API_HOST='https://guiame-api.3far1ivu8btka.us-east-1.cs.amazonlightsail.com'
 
 # Dados do Node MCU
@@ -76,7 +76,7 @@ def abre_access_point():
 
 def obtem_comportamento():
     res = urequests.get(f'{API_HOST}/artefato/{ARTEFATO_ID}',
-                        auth=(API_USER, API_HOST))
+                        auth=(API_USER, API_PASSWORD))
     artefato = res.json()
 
     return artefato['comportamentos']
