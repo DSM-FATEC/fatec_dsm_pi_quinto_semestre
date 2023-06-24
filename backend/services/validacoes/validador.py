@@ -25,3 +25,8 @@ class Validador:
         if valor is None:
             raise ValueError(f'campo {campo} não pode ser nulo')
 
+    @staticmethod
+    def existe_em(valor, campo, valores_validos):
+        if not valor in valores_validos:
+            raise ValueError(f'campo {campo} não é valido')
+

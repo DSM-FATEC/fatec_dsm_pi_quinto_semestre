@@ -2,6 +2,7 @@ from os import getenv
 from secrets import compare_digest
 from datetime import datetime
 from threading import Thread
+from json import dumps
 
 # Importando bibliotecas externas
 from fastapi import FastAPI, Request, Depends
@@ -25,6 +26,7 @@ from conectors.websocket_connector import WebsocketConnector
 from conectors.rabbitmq_conector import RabbitMqConector
 from exceptions.registro_nao_encontrado import RegistroNaoEncontradoException
 from exceptions.usuario_invalido import UsuarioInvalidoException
+from logger.db_logger import DbLogger
 from models.tipo_entidade_model import TipoEntidadeModel
 from models.entidade_model import EntidadeModel, EntidadeSchema
 from models.tipo_artefato_model import TipoArtefatoModel
@@ -37,6 +39,7 @@ from repositories.tipo_artefato_repository import TipoArtefatoRepository
 from repositories.artefato_repository import ArtefatoRepository
 from repositories.evento_repository import EventoRepository
 from repositories.usuario_repository import UsuarioRepository
+from repositories.log_repository import LogRepository
 
 
 # Carrega o arquivo de configurações, tornando as variáveis presentes
@@ -69,6 +72,7 @@ tipo_artefato_repository = TipoArtefatoRepository(pool)
 artefato_repository = ArtefatoRepository(pool)
 evento_repository = EventoRepository(pool)
 usuario_repository = UsuarioRepository(pool)
+log_repository = LogRepository(pool)
 
 # Instanciando os controllers
 tipo_entidade_controller = TipoEntidadeController(tipo_entidade_repository)
@@ -79,19 +83,40 @@ evento_controller = EventoController(evento_repository, websockets_conector)
 usuario_controller = UsuarioController(usuario_repository)
 auth_controller = AuthController(usuario_repository)
 
+# Registrando loggers
+db_logger = DbLogger(log_repository)
+
 
 # Registrando os middlewares
 @app.middleware('http')
 async def lida_com_erros_middleware(requisicao: Request, proximo):
+    mensagem = dumps({
+        'metodo': requisicao.method,
+        'url': {
+            'host': requisicao.url.hostname,
+            'path': requisicao.url.path,
+            'query': requisicao.url.query,
+        },
+    })
+    db_logger.info(mensagem)
+
     try:
         return await proximo(requisicao)
     except ValidationError as e:
+        db_logger.aviso(str(e))
+
         return JSONResponse(status_code=422, content={'erro': str(e)})
     except RegistroNaoEncontradoException as e:
+        db_logger.aviso(str(e))
+
         return JSONResponse(status_code=404, content={'erro': str(e)})
     except UsuarioInvalidoException as e:
+        db_logger.aviso(str(e))
+
         return JSONResponse(status_code=401, content={'erro': str(e)})
     except Exception as e:
+        db_logger.erro(e)
+
         return JSONResponse(status_code=500, content={'erro': str(e)})
 
 
@@ -108,7 +133,8 @@ def valida_credenciais(credenciais: HTTPBasicCredentials = Depends(security)):
 
 # Abre consumidor
 eventos_consumer = EventosConsumer(eventos_canal, eventos_fila,
-                                   evento_repository, websockets_conector)
+                                   evento_repository, websockets_conector,
+                                   logger=db_logger)
 
 # Inicia consumidor de eventos
 eventos_consumer_thread = Thread(target=eventos_consumer.consome_eventos,
