@@ -22,7 +22,7 @@ class WebsocketConnector:
             return
 
         if isinstance(mensagem, dict):
-            mensagem = dumps(mensagem)
+            mensagem = dumps(mensagem, default=str)
 
         for connection in self.conexoes_ativas:
             run(connection.send_text(mensagem))
