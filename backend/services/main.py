@@ -1,6 +1,3 @@
-from os import getenv
-from secrets import compare_digest
-from datetime import datetime
 from threading import Thread
 from json import dumps
 
@@ -130,16 +127,21 @@ def valida_credenciais(credenciais: HTTPBasicCredentials = Depends(security)):
     return credenciais.username
 
 
+def thread():
+    db_logger.info('Consumindo eventos...')
 
-# Abre consumidor
-eventos_consumer = EventosConsumer(eventos_canal, eventos_fila,
-                                   evento_repository, websockets_conector,
-                                   logger=db_logger)
+    try:
+        eventos_canal, eventos_fila = rabbit_mq_conector.abre_canal('eventos_exchange',
+                                                                    nome_fila='eventos',
+                                                                    conecta_amq_topic=True)
+        eventos_consumer = EventosConsumer(eventos_canal, eventos_fila,
+                                           evento_repository, websockets_conector,
+                                           logger=db_logger)
+        eventos_consumer.consome_eventos()
+    except Exception:
+        thread()
 
-# Inicia consumidor de eventos
-eventos_consumer_thread = Thread(target=eventos_consumer.consome_eventos,
-                                 name='Consome eventos')
-eventos_consumer_thread.start()
+Thread(target=thread, name='Consome eventos').start()
 
 
 # Endpoints utilitários

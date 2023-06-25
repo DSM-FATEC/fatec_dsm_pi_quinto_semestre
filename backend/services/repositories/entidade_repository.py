@@ -1,5 +1,3 @@
-from json import loads
-
 from repositories.base_repository import BaseRepository
 from exceptions.registro_nao_encontrado import RegistroNaoEncontradoException
 
