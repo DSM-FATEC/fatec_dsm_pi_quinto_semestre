@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+seeder.py
+deploy_docker.sh
