@@ -1,178 +1,210 @@
-import 'dart:convert';
-import 'dart:ffi';
-import 'dart:io';
+class Evento {
+  int? id;
+  Artefato? artefato;
+  Corpo? corpo;
+  String? criadoEm;
+  String? atualizadoEm;
 
-import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+  Evento(
+      {this.id, this.artefato, this.corpo, this.criadoEm, this.atualizadoEm});
 
-class AlertEvent {
-  AlertEvent({
-    required this.artefato,
-    required this.corpo,
-    required this.criadoEm,
-    required this.atualizadoEm,
-  });
+  Evento.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    artefato =
+        json['artefato'] != null ? Artefato.fromJson(json['artefato']) : null;
+    corpo = json['corpo'] != null ? Corpo.fromJson(json['corpo']) : null;
+    criadoEm = json['criado_em'];
+    atualizadoEm = json['atualizado_em'];
+  }
 
-  Artefato artefato;
-  Corpo corpo;
-  String criadoEm;
-  String atualizadoEm;
-
-  factory AlertEvent.fromJson(Map<String, dynamic> json) => AlertEvent(
-    artefato: Artefato.fromMap(json['artefato']),
-    corpo: Corpo.fromMap(json['corpo']),
-    criadoEm: json['criado_em'],
-    atualizadoEm: json['atualizado_em'],
-  );
-  
-  Map<String, dynamic> toMap() => {
-    "artefato": artefato,
-    "corpo": corpo,
-    "criadoEm": criadoEm,
-    "atualizadoEm": atualizadoEm,
-  };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    if (artefato != null) {
+      data['artefato'] = artefato!.toJson();
+    }
+    if (corpo != null) {
+      data['corpo'] = corpo!.toJson();
+    }
+    data['criado_em'] = criadoEm;
+    data['atualizado_em'] = atualizadoEm;
+    return data;
+  }
 }
 
-class Artefato{
-  Artefato({
-    required this.id,
-    required this.tipo,
-    required this.entidade,
-    required this.ativo,
-    required this.descricao,
-    required this.criadoEm,
-    required this.atualizadoEm,
-  });
+class Artefato {
+  int? id;
+  Tipo? tipo;
+  Entidade? entidade;
+  String? descricao;
+  Comportamentos? comportamentos;
+  bool? ativo;
+  String? criadoEm;
+  String? atualizadoEm;
 
-  int id;
-  Tipo tipo;
-  Entidade entidade;
-  bool ativo;
-  String descricao;
-  String criadoEm;
-  String atualizadoEm;
+  Artefato(
+      {this.id,
+      this.tipo,
+      this.entidade,
+      this.descricao,
+      this.comportamentos,
+      this.ativo,
+      this.criadoEm,
+      this.atualizadoEm});
 
-  factory Artefato.fromMap(Map<String, dynamic> json) => Artefato(
-    id: json["id"], 
-    tipo: Tipo.fromMap(json["tipo"]),
-    entidade: Entidade.fromMap(json["entidade"]), 
-    ativo: json["ativo"], 
-    descricao: json["descricao"], 
-    criadoEm: json["criado_em"], 
-    atualizadoEm: json["atualizado_em"],
-  );
+  Artefato.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    tipo = json['tipo'] != null ? Tipo.fromJson(json['tipo']) : null;
+    entidade =
+        json['entidade'] != null ? Entidade.fromJson(json['entidade']) : null;
+    descricao = json['descricao'];
+    comportamentos = json['comportamentos'] != null
+        ? Comportamentos.fromJson(json['comportamentos'])
+        : null;
+    ativo = json['ativo'];
+    criadoEm = json['criado_em'];
+    atualizadoEm = json['atualizado_em'];
+  }
 
-  Map<String, dynamic> toMap() => {
-    "id": id, 
-    "tipo": tipo.toMap(), 
-    "entidade": entidade.toMap(), 
-    "ativo": ativo, 
-    "descricao": descricao, 
-    "criadoEm": criadoEm, 
-    "atualizadoEm": atualizadoEm, 
-  };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    if (tipo != null) {
+      data['tipo'] = tipo!.toJson();
+    }
+    if (entidade != null) {
+      data['entidade'] = entidade!.toJson();
+    }
+    data['descricao'] = descricao;
+    if (comportamentos != null) {
+      data['comportamentos'] = comportamentos!.toJson();
+    }
+    data['ativo'] = ativo;
+    data['criado_em'] = criadoEm;
+    data['atualizado_em'] = atualizadoEm;
+    return data;
+  }
 }
 
-class Tipo{
-  Tipo({
-    required this.id,
-    required this.descricao,
-    required this.produtor,
-    required this.criadoEm,
-    required this.atualizadoEm,
-  });
-
-  int id;
-  String descricao;
+class Tipo {
+  int? id;
+  String? descricao;
   bool? produtor;
-  String criadoEm;
-  String atualizadoEm;
+  String? criadoEm;
+  String? atualizadoEm;
 
-  factory Tipo.fromMap(Map<String, dynamic> json) => Tipo(
-    id: json["id"], 
-    descricao: json["descricao"], 
-    produtor: json["produtor"], 
-    criadoEm: json["criado_em"], 
-    atualizadoEm: json["atualizado_em"],
-  );
+  Tipo(
+      {this.id,
+      this.descricao,
+      this.produtor,
+      this.criadoEm,
+      this.atualizadoEm});
 
-  Map<String, dynamic> toMap() => {
-    "id": id, 
-    "descricao": descricao, 
-    "produtor": produtor, 
-    "criadoEm": criadoEm, 
-    "atualizadoEm": atualizadoEm, 
-  };
+  Tipo.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    descricao = json['descricao'];
+    produtor = json['produtor'];
+    criadoEm = json['criado_em'];
+    atualizadoEm = json['atualizado_em'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['descricao'] = descricao;
+    data['produtor'] = produtor;
+    data['criado_em'] = criadoEm;
+    data['atualizado_em'] = atualizadoEm;
+    return data;
+  }
 }
 
-class Entidade{
-  Entidade({
-    required this.id,
-    required this.tipo,
-    required this.descricao,
-    required this.cep,
-    required this.complemento,
-    required this.bairro,
-    required this.endereco,
-    required this.cidade,
-    required this.estado,
-    required this.criadoEm,
-    required this.atualizadoEm,
-  });
+class Entidade {
+  int? id;
+  Tipo? tipo;
+  String? descricao;
+  String? cep;
+  String? endereco;
+  String? bairro;
+  String? cidade;
+  String? estado;
+  String? criadoEm;
+  String? atualizadoEm;
 
-  int id;
-  Tipo tipo;
-  String descricao;
-  String cep;
-  String? complemento;
-  String bairro;
-  String endereco;
-  String cidade;
-  String estado;
-  String criadoEm;
-  String atualizadoEm;
+  Entidade(
+      {this.id,
+      this.tipo,
+      this.descricao,
+      this.cep,
+      this.endereco,
+      this.bairro,
+      this.cidade,
+      this.estado,
+      this.criadoEm,
+      this.atualizadoEm});
 
-  factory Entidade.fromMap(Map<String, dynamic> json) => Entidade(
-    id: json['id'],
-    tipo: Tipo.fromMap(json['tipo']),
-    descricao: json['descricao'], 
-    cep: json['cep'], 
-    complemento: json['complemento'], 
-    bairro: json['bairro'], 
-    endereco: json['endereco'], 
-    cidade: json['cidade'], 
-    estado: json['estado'], 
-    criadoEm: json['criado_em'], 
-    atualizadoEm: json['atualizado_em']
-  );
+  Entidade.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    tipo = json['tipo'] != null ? Tipo.fromJson(json['tipo']) : null;
+    descricao = json['descricao'];
+    cep = json['cep'];
+    endereco = json['endereco'];
+    bairro = json['bairro'];
+    cidade = json['cidade'];
+    estado = json['estado'];
+    criadoEm = json['criado_em'];
+    atualizadoEm = json['atualizado_em'];
+  }
 
-  Map<String, dynamic> toMap() => {
-    "id": id,
-    "tipo": tipo.toMap(),
-    "descricao": descricao, 
-    "cep": cep, 
-    "complemento": complemento, 
-    "bairro": bairro, 
-    "endereco": endereco, 
-    "cidade": cidade, 
-    "estado": estado, 
-    "criadoEm": criadoEm, 
-    "atualizadoEm": atualizadoEm
-  };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    if (tipo != null) {
+      data['tipo'] = tipo!.toJson();
+    }
+    data['descricao'] = descricao;
+    data['cep'] = cep;
+    data['endereco'] = endereco;
+    data['bairro'] = bairro;
+    data['cidade'] = cidade;
+    data['estado'] = estado;
+    data['criado_em'] = criadoEm;
+    data['atualizado_em'] = atualizadoEm;
+    return data;
+  }
 }
 
-class Corpo{
-  Corpo({
-    required this.estado,
-  });
+class Comportamentos {
+  int? openDuration;
+  int? closedDuration;
 
-  String estado;
+  Comportamentos({this.openDuration, this.closedDuration});
 
-  factory Corpo.fromMap(Map<String, dynamic> json) => Corpo(
-    estado: json['estado'],
-  );
+  Comportamentos.fromJson(Map<String, dynamic> json) {
+    openDuration = json['open_duration'];
+    closedDuration = json['closed_duration'];
+  }
 
-  Map<String, dynamic> toMap() => {
-    "estado": estado
-  };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['open_duration'] = openDuration;
+    data['closed_duration'] = closedDuration;
+    return data;
+  }
+}
+
+class Corpo {
+  String? estado;
+
+  Corpo({this.estado});
+
+  Corpo.fromJson(Map<String, dynamic> json) {
+    estado = json['estado'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['estado'] = estado;
+    return data;
+  }
 }
