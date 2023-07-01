@@ -1,29 +1,25 @@
 version: '3'
 
 services:
-  api:
+  python:
     build:
-      context: .
-      dockerfile: ./docker/api/Dockerfile
+      context: ./api
+      dockerfile: Dockerfile
+    restart: on-failure
     ports:
       - 8000:8000
     volumes:
-      - ./services:/app:Z
+      - ./api:/app:Z
     networks:
       - backend
-    environment:
-      POSTGRES_PASSWORD: pi_dsm_5
-      POSTGRES_USER: pi_dsm_5
-      POSTGRES_DB: pi_dsm_5
-      POSTGRES_PORT: 5432
-      POSTGRES_HOST: postgres
-      ADMIN_USUARIO: admin
-      ADMIN_SENHA: admin
+    env_file:
+      - ./api/.env
     depends_on:
       - postgres
+      - rabbitmq
 
   postgres:
-    image: postgres:15
+    image: postgres:15.3-alpine
     restart: on-failure
     ports:
       - 5432:5432
@@ -38,6 +34,21 @@ services:
       POSTGRES_DB: pi_dsm_5
       POSTGRES_PORT: 5432
       POSTGRES_HOST: postgres
+
+  rabbitmq:
+    image: rabbitmq:3.11.18-management-alpine
+    restart: on-failure
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./rabbitmq/data:/var/lib/rabbitmq:Z
+    networks:
+      - backend
+    environment:
+      RABBITMQ_DEFAULT_USER: pi_dsm_5
+      RABBITMQ_DEFAULT_PASS: pi_dsm_5
+      RABBITMQ_DEFAULT_VHOST: mensageria_pi_dsm_5
 
 networks:
   backend:

@@ -1,8 +1,8 @@
 import requests
 
 
-API_HOST = 'https://guiame-api.3far1ivu8btka.us-east-1.cs.amazonlightsail.com'
-API_AUTH = ('admin', 'admin')
+API_HOST = 'http://localhost:8000'
+API_AUTH = ('carol@carol.carol', 'carol')
 
 
 def seed(endpoint='', dados={}):
